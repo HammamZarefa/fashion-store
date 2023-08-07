@@ -20,7 +20,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->sentence,
+            'name' => $this->faker->name,
             'description' => $this->faker->paragraph,
             'price' => $this->faker->randomFloat(2, 1, 100),
             'color_id' => \App\Models\Color::all()->random()->id,
@@ -41,6 +41,10 @@ class ProductFactory extends Factory
         return $this->afterCreating(function (Product $product) {
             $product->categories()->attach(\App\Models\Category::all()->pluck('id')->toArray());
             $product->images()->createMany(\App\Models\Image::factory(5)->make()->toArray());
+            $product->sku = ($product->is_for_sale ? 'S' : 'R') . str_pad(($product->categories->pluck('category_id')->toArray())[0], 3, '0',
+                    STR_PAD_LEFT) . '-' .
+                str_pad($product->id, 6, '0', STR_PAD_LEFT);
+            $product->save();
         });
     }
 }

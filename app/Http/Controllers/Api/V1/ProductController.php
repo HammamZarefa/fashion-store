@@ -8,6 +8,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -80,5 +81,43 @@ class ProductController extends Controller
     {
         $product->with(['color', 'size', 'material', 'condition', 'section', 'branch', 'user', 'categories:name', 'images']);
         return ProductResource::make($product);
+    }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'color_id' => 'required|exists:colors,id',
+            'material_id' => 'required|exists:materials,id',
+            'section_id' => 'required|exists:sections,id',
+            'size_id' => 'required|exists:sizes,id',
+            'condition_id' => 'required|exists:conditions,id',
+            'user_id' => 'required|exists:users,id',
+            'branch_id' => 'required|exists:branches,id',
+            'is_for_sale' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages(), 'status' => 400], 400);
+        }
+
+        $product = Product::create([
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'price' =>  $request->input('price'),
+            'category_id' => $request->input('category_id'),
+            'color_id' => $request->input('color_id'),
+            'material_id' => $request->input('material_id'),
+            'section_id' => $request->input('section_id'),
+            'size_id' => $request->input('size_id'),
+            'condition_id' => $request->input('condition_id'),
+            'user_id' => $request->input('user_id'),
+            'branch_id' => $request->input('branch_id'),
+        ]);
+
+        return response()->json(['message' => 'Product created successfully', 'data' => $product, 'status' => 201]);
     }
 }

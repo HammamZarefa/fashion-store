@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin;
+use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -36,7 +38,13 @@ Route::prefix('admin')->middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('user-products', [UserController::class, 'products']);
+    Route::get('user/info', [UserController::class, 'getInfo']);
+    Route::post('user/info', [UserController::class, 'updateInfo']);
+    Route::post('user/reset', [AuthController::class, 'resetPassword']);
 });
 
 Route::post('login', LoginController::class);
+Route::post('register', RegisterController::class);
+

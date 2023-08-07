@@ -16,7 +16,7 @@ class ProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->title,
+            'name' => $this->name,
             'description' => $this->description,
             'price' => number_format($this->price, 2),
             'color' => $this->color->name,
@@ -29,7 +29,8 @@ class ProductResource extends JsonResource
             'is_for_sale' => $this->is_for_sale,
             'user' => $this->user->name,
             'categories' => $this->categories->pluck('name'),
-            'images' => $this->images
+            'images' => $this->images,
+            'sku' => $this->sku
         ];
     }
 }

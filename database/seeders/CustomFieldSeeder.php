@@ -15,6 +15,7 @@ use App\Models\User;
 use Database\Factories\BannerFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class CustomFieldSeeder extends Seeder
 {
@@ -23,6 +24,7 @@ class CustomFieldSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
         $colors = [
             ["name" => "Red"],
             ["name" => "Blue"],
@@ -88,10 +90,13 @@ class CustomFieldSeeder extends Seeder
             Section::create($section);
 
         $categories = [
-            ["name" => "Dress"],
-            ["name" => "Party Wear"],
-            ["name" => "Wedding"],
-            ["name" => "Hats"],
+            ["name" => "Dress"
+                , 'image' => 'https://picsum.photos/800/800?random=' . $faker->unique()->numberBetween(1, 1000),],
+            ["name" => "Party Wear", 'image' => 'https://picsum.photos/800/800?random=' . $faker->unique()->numberBetween(1, 1000),],
+            ["name" => "Wedding", 'image' => 'https://picsum.photos/800/800?random=' . $faker->unique()->numberBetween(1, 1000),],
+            ["name" => "Hats", 'image' => 'https://picsum.photos/800/800?random=' . $faker->unique()->numberBetween(1, 1000),],
+            ["name" => "Gold", 'image' => 'https://picsum.photos/800/800?random=' . $faker->unique()->numberBetween(1, 1000),],
+            ["name" => "Shirt", 'image' => 'https://picsum.photos/800/800?random=' . $faker->unique()->numberBetween(1, 1000),],
         ];
 
         foreach ($categories as $category)
@@ -106,7 +111,7 @@ class CustomFieldSeeder extends Seeder
             Branch::create($branch);
 
         User::factory()->create();
-        Product::factory(120)->create();
+        Product::factory(1000)->create();
         Banner::factory(3)->create();
 
     }

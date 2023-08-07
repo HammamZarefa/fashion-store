@@ -26,6 +26,7 @@ return new class extends Migration
             $table->tinyInteger('is_for_sale')->default(1);
             $table->foreignId('user_id')->constrained();
             $table->enum('status',['rent','sale','available','not_available']);
+            $table->string('sku')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
