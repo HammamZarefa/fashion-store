@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin;
+use App\Http\Controllers\Api\V1\Admin\NotificationController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
@@ -31,6 +32,7 @@ Route::get('language/{lang}', function ($lang) {
 });
 Route::get('data', [HomeController::class, 'getDataByModels']);
 Route::prefix('admin')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('notifications', [Admin\NotificationController::class, 'index']);
 //    Route::middleware('role:admin')->group(function () {
 //        Route::post('products', [Admin\ProductController::class, 'store']);
 //        Route::post('products/{Category}/Products', [Admin\ProductController::class, 'store']);
