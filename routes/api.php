@@ -24,8 +24,6 @@ use Illuminate\Support\Facades\Session;
 
 Route::post('products', [ProductController::class, 'createProduct']);
 Route::put('products/{id}', [ProductController::class, 'updateProduct']);
-Route::post('products', [ProductController::class, 'createProduct']);
-Route::put('products/{id}', [ProductController::class, 'updateProduct']);
 Route::apiResource('products', ProductController::class);
 Route::get('data/{model_name}', [HomeController::class, 'getDataByModelName']);
 Route::get('language/{lang}', function ($lang) {
