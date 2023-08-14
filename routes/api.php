@@ -31,10 +31,9 @@ Route::get('language/{lang}', function ($lang) {
 });
 Route::get('data', [HomeController::class, 'getDataByModels']);
 Route::prefix('admin')->middleware(['auth:sanctum'])->group(function () {
-//    Route::middleware('role:admin')->group(function () {
-//        Route::post('products', [Admin\ProductController::class, 'store']);
-//        Route::post('products/{Category}/Products', [Admin\ProductController::class, 'store']);
-//    });
+    Route::apiResource('categories', Admin\CategoryController::class);
+    Route::apiResource('colors', Admin\ColorController::class);
+    Route::apiResource('sizes', Admin\SizeController::class);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
