@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -15,7 +17,18 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $user = User::create($request->all());
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $input = $request->all();
+        $input['password'] = Hash::make($input['password']);
+
+        $user = User::create($input);
 
         return response()->json($user, 201);
     }
@@ -29,8 +42,19 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $input = $request->all();
+        $input['password'] = Hash::make($input['password']);
+
         $user = User::findOrFail($id);
-        $user->update($request->all());
+        $user->update($input);
 
         return response()->json($user, 200);
     }
