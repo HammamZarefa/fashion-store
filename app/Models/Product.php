@@ -12,7 +12,7 @@ use Spatie\Translatable\HasTranslations;
 class Product extends Model
 {
     use HasFactory ,HasTranslations;
-
+    protected $guarded=['id'];
     public $translatable = ['name', 'description'];
     public function categories() : BelongsToMany
     {
