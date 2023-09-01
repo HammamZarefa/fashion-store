@@ -22,7 +22,8 @@ use Illuminate\Support\Facades\Session;
 |
 */
 
-Route::apiResource('products', ProductController::class);
+Route::get('products', [ProductController::class,'index']);
+Route::get('products/{product}', [ProductController::class,'show']);
 Route::get('data/{model_name}', [HomeController::class, 'getDataByModelName']);
 Route::get('language/{lang}', function ($lang) {
     app()->setLocale($lang);
@@ -43,8 +44,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('user/info', [UserController::class, 'getInfo']);
     Route::post('user/info', [UserController::class, 'updateInfo']);
     Route::post('user/reset', [AuthController::class, 'resetPassword']);
+    Route::post('products', [ProductController::class,'create']);
+    Route::post('products/{product}', [ProductController::class,'update']);
 });
 
 Route::post('login', LoginController::class);
 Route::post('register', RegisterController::class);
+
 
