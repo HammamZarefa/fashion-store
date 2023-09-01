@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -19,7 +20,7 @@ class UserController extends Controller
     public function getInfo()
     {
         $user = auth()->user();
-        return response()->json($user, 200);
+        return UserResource::make($user);
     }
 
     public function updateInfo(UpdateUserRequest $request)
@@ -40,6 +41,6 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->save();
-        return response()->json($user, 200);
+        return UserResource::make($user);
     }
 }
