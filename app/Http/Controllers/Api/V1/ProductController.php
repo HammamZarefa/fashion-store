@@ -32,7 +32,7 @@ class ProductController extends Controller
     public function index(ProductsListRequest $request)
     {
         $products = Product::where('status', 'available')
-            ->with(['color', 'size', 'material', 'condition', 'section', 'branch', 'user', 'categories:name', 'images'])
+            ->with(['color', 'size', 'material', 'condition', 'section', 'branch', 'user', 'categories', 'images'])
             ->when($request->size, function ($query) use ($request) {
                 $query->where('size_id', $request->size);
             })
@@ -79,7 +79,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->with(['color', 'size', 'material', 'condition', 'section', 'branch', 'user', 'categories:name', 'images']);
+        $product->with(['color', 'size', 'material', 'condition', 'section', 'branch', 'user', 'categories', 'images']);
         return ProductResource::make($product);
     }
 
@@ -87,7 +87,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'string',
             'price' => 'required',
             'category_id' => 'required|exists:categories,id',
             'color_id' => 'required|exists:colors,id',
@@ -95,7 +95,6 @@ class ProductController extends Controller
             'section_id' => 'required|exists:sections,id',
             'size_id' => 'required|exists:sizes,id',
             'condition_id' => 'required|exists:conditions,id',
-            'user_id' => 'required|exists:users,id',
             'branch_id' => 'required|exists:branches,id',
             'is_for_sale' => 'required'
         ]);
@@ -114,8 +113,9 @@ class ProductController extends Controller
             'section_id' => $request->input('section_id'),
             'size_id' => $request->input('size_id'),
             'condition_id' => $request->input('condition_id'),
-            'user_id' => $request->input('user_id'),
+            'user_id' => auth()->id(),
             'branch_id' => $request->input('branch_id'),
+            'is_for_sale' => $request->input('is_for_sale')
         ]);
 
         return response()->json(['message' => 'Product created successfully', 'data' => $product, 'status' => 201]);
