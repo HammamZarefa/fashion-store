@@ -85,7 +85,7 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'string',
             'price' => 'required',
@@ -99,8 +99,8 @@ class ProductController extends Controller
             'is_for_sale' => 'required'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages(), 'status' => 400], 400);
+        if ($validatedData->fails()) {
+            return response()->json(['error' => $validatedData->messages(), 'status' => 400], 400);
         }
 
         $product = Product::create([
