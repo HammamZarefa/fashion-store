@@ -85,7 +85,7 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'string',
             'price' => 'required',
@@ -96,17 +96,17 @@ class ProductController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'condition_id' => 'required|exists:conditions,id',
             'branch_id' => 'required|exists:branches,id',
-            'is_for_sale' => 'required'
+            'is_for_sale' => 'required',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        if ($validatedData->fails()) {
-            return response()->json(['error' => $validatedData->messages(), 'status' => 400], 400);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages(), 'status' => 400], 400);
         }
-
         $product = Product::create([
             'name' => $request->input('name'),
             'description' => $request->input('description'),
-            'price' =>  $request->input('price'),
+            'price' => $request->input('price'),
             'category_id' => $request->input('category_id'),
             'color_id' => $request->input('color_id'),
             'material_id' => $request->input('material_id'),
@@ -115,9 +115,75 @@ class ProductController extends Controller
             'condition_id' => $request->input('condition_id'),
             'user_id' => auth()->id(),
             'branch_id' => $request->input('branch_id'),
+            'status' => 'pending',
             'is_for_sale' => $request->input('is_for_sale')
         ]);
+        $product->categories()->attach($request->category_id);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->storeAs('public/images', $filename);
 
+                // Create the image record in the database
+                $product->images()->create([
+                    'path' => $filename,
+                    // Add other image fields as needed
+                ]);
+            }
+        }
         return response()->json(['message' => 'Product created successfully', 'data' => $product, 'status' => 201]);
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'description' => 'string',
+            'price' => 'numeric',
+            'category_id' => 'exists:categories,id',
+            'color_id' => 'exists:colors,id',
+            'material_id' => 'exists:materials,id',
+            'section_id' => 'exists:sections,id',
+            'size_id' => 'exists:sizes,id',
+            'condition_id' => 'exists:conditions,id',
+            'branch_id' => 'exists:branches,id',
+            'is_for_sale' => 'boolean',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages(), 'status' => 400], 400);
+        }
+
+        $product->update($request->only([
+            'name',
+            'description',
+            'price',
+            'category_id',
+            'color_id',
+            'material_id',
+            'section_id',
+            'size_id',
+            'condition_id',
+            'branch_id',
+            'is_for_sale'
+        ]));
+
+        if ($request->category_id)
+            $product->categories()->sync($request->category_id);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->storeAs('public/images', $filename);
+
+                // Create or update the image record in the database
+                $product->images()->create([
+                    'path' => $filename,
+                    // Add other image fields as needed
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Product updated successfully', 'data' => $product, 'status' => 200]);
     }
 }
