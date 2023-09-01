@@ -26,7 +26,7 @@ class UserController extends Controller
     {
         $request->validate([
             'email' => ['required', 'email'],
-            'image' => ['string'],
+            'image' => ['mimes:jpeg,jpg,png,gif|max:10000'],
             'phone' => ['string']
         ]);
 
